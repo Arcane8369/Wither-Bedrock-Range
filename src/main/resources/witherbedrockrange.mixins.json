@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.witherbedrockrange.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "WitherBossMixin"
+  ],
+  "client": [],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
