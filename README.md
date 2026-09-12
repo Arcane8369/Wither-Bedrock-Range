@@ -13,6 +13,12 @@
 >
 > This mirrors Bedrock's much more destructive Wither: instead of crumbling only a small pocket of terrain when hit, it now clears a noticeably larger box.
 
+> 🔄 **需要 1.20 / 1.20.1 Forge 版？** 请前往 **`port/1.20.1-forge`** 分支：
+> 👉 **[Wither Bedrock Range (Forge 1.20 / 1.20.1)](https://github.com/Sean8369/Wither-Bedrock-Range/tree/port/1.20.1-forge)**
+>
+> 🔄 **Want the 1.20 / 1.20.1 Forge version?** Use the **`port/1.20.1-forge`** branch:
+> 👉 **[Wither Bedrock Range (Forge 1.20 / 1.20.1)](https://github.com/Sean8369/Wither-Bedrock-Range/tree/port/1.20.1-forge)**
+
 ---
 
 ## 环境要求 / Requirements
