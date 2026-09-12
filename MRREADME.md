@@ -76,13 +76,15 @@
 
 中文 / Chinese:
 
-1. 基于 [GNU General Public License v3.0](LICENSE.txt) 发布。
-2. 构建方式与源码改动详见仓库 [README.md](README.md)。
+1. 源码仓库：**[github.com/Sean8369/Wither-Bedrock-Range](https://github.com/Sean8369/Wither-Bedrock-Range)**。
+2. 基于 [GNU General Public License v3.0](https://github.com/Sean8369/Wither-Bedrock-Range/blob/main/LICENSE.txt) 发布。
+3. 构建方式与源码改动详见仓库 [README.md](https://github.com/Sean8369/Wither-Bedrock-Range/blob/main/README.md)。
 
 英文 / English:
 
-1. Released under the [GNU General Public License v3.0](LICENSE.txt).
-2. Build instructions and source changes are detailed in the repository [README.md](README.md).
+1. Source repository: **[github.com/Sean8369/Wither-Bedrock-Range](https://github.com/Sean8369/Wither-Bedrock-Range)**.
+2. Released under the [GNU General Public License v3.0](https://github.com/Sean8369/Wither-Bedrock-Range/blob/main/LICENSE.txt).
+3. Build instructions and source changes are detailed in the repository [README.md](https://github.com/Sean8369/Wither-Bedrock-Range/blob/main/README.md).
 
 ---
 
