@@ -1,41 +1,32 @@
-### Gradle ###
-.gradle
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/**/build/
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
 
-### IntelliJ IDEA ###
-.idea/
+# idea
+out
+*.ipr
 *.iws
 *.iml
-*.ipr
-out/
-!**/src/**/out/
+.idea
 
-.run/
+# gradle
+build
+.gradle
 
-### Eclipse ###
-.apt_generated
-.classpath
-.eclipse/
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/**/bin/
+# other
+eclipse
+run
+runs
+run-data
+.vscode
+.idea/
 
-### VS Code ###
-.vscode/
+# local machine-specific Gradle settings (never commit)
+local.properties
 
-### Mac OS ###
-.DS_Store
-
-### Minecraft Modding ###
-run/
-runs/
-!**/src/**/run/
-**/src/generated/**/.cache/
-repo/
-!**/src/**/repo/
+# Files from Forge MDK
+forge*changelog.txt

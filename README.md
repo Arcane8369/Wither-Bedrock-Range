@@ -1,17 +1,16 @@
-# Wither Bedrock Range
+# Wither Bedrock Range (Forge 1.20.1)
 
 > **English / 中文**
 
-一个 **NeoForge 1.21.1** 模组：让凋灵（Wither）在**受伤时**对周围方块的破坏范围对齐**基岩版（Bedrock Edition）**。
->
-> A **NeoForge 1.21.1** mod that makes the Wither's block-destruction range (triggered whenever the Wither takes damage) match **Bedrock Edition**.
+**本分支说明 / This branch:** 当前内容存放于 **`port/1.20.1-forge` 分支**（未合并进仓库默认分支 `main`），
+专门用于 **Forge 1.20 / 1.20.1** 的移植。默认分支 `main` 仍是 NeoForge 1.21.1 版。
+> This is the **Forge 1.20 / 1.20.1** port, kept on the separate **`port/1.20.1-forge` branch**. The default `main` branch contains the NeoForge 1.21.1 version.
 
-- **Java 版官方行为 / Vanilla Java:** 受伤时约破坏 **3 × 4 × 3** 的方块区域 / roughly a 3×4×3 area
-- **本模组（基岩版风格）本 / This mod (Bedrock-style):** 受伤时破坏 **4 × 6 × 4** / a 4×6×4 area
+让凋灵（Wither）在**受伤时**对周围方块的破坏范围对齐**基岩版（Bedrock Edition）**。
+Same behaviour as the main project: when the Wither takes damage, it destroys a **Bedrock Edition**-sized block area.
 
-本模组复刻了基岩版更具破坏力的凋灵：不再只是在被打时崩出一个小的方块坑，而是清掉明显更大的一个区域。
->
-> This mirrors Bedrock's much more destructive Wither: instead of crumbling only a small pocket of terrain when hit, it now clears a noticeably larger box.
+- **原版 / Vanilla 1.20 / 1.20.1 (Forge):** 硬编码的三层循环，破坏约 **3 × 4 × 3** 的方块区域 / a hard-coded ~3×4×3 area
+- **本移植 / This port:** 破坏 **4 × 6 × 4**（X × Y × Z）/ a 4×6×4 area
 
 ---
 
@@ -19,21 +18,26 @@
 
 | 中文 | English |
 |------|---------|
-| Minecraft Java 版 **1.21.1** | Minecraft Java Edition **1.21.1** |
-| **NeoForge** `21.1.x` 或更新 / or newer | **NeoForge** `21.1.x` or newer |
-| 从源码编译需要 / To build from source: **Java 21** | Java **21** |
+| Minecraft Java 版 **1.20 / 1.20.1** | Minecraft Java Edition **1.20 / 1.20.1** |
+| **Forge** `47.x`（Forge，非 NeoForge） | **Forge** `47.x` (Forge, not NeoForge) |
+| 从源码构建需要 **Java 17** | Java **17** to build |
+
+> 注意：这是 **Forge** 版本且只适配 **1.20 / 1.20.1**，仅在本 `port/1.20.1-forge` 分支上。
+> 需要 **NeoForge 1.21.1** 版请用仓库默认分支 `main`。
+> Note: this is the **Forge** build for **1.20 / 1.20.1**, only on the `port/1.20.1-forge` branch. For the **NeoForge 1.21.1** build, use the default `main` branch.
 
 ---
 
 ## 安装方法 / Installation
 
-1. 下载模组 JAR（见发布页，或自行编译）/ Download the mod JAR (from Releases, or build it yourself).
-2. 放入客户端 `.minecraft/mods/`（和/或专用服务器 `mods/`）/ Place it into your client `.minecraft/mods/` (and/or the dedicated server's `mods/`).
-3. 启动游戏，召唤凋灵并攻击它 / Launch the game, summon a Wither and hit it.
+1. 将 JAR 放入客户端 `.minecraft/mods/`（和/或专用服务器 `mods/`）/ Drop the JAR into your client `.minecraft/mods/` (and/or the server's `mods/`).
+2. 启动游戏，攻击凋灵即可看到基岩版风格的破坏范围 / Launch, then hit a Wither.
 
 ---
 
 ## 从源码构建 / Building from source
+
+在**仓库根目录**执行 / Run in the **repo root**:
 
 ```bash
 # Linux / macOS
@@ -43,50 +47,54 @@
 gradlew.bat build
 ```
 
-编译产物位于 / The compiled JAR is written to:
+编译产物 / Output JAR: `build/libs/witherbedrockrange-1.0.0.jar`
 
-```
-build/libs/
-```
-
-### 调整破坏范围大小 / Adjusting the destruction size
-
-控制范围大小的三个数值位于 / The three values live in:
-
-`src/main/java/com/witherbedrockrange/mixin/WitherBossMixin.java`
-
-| 常量 / Constant | 含义 / Meaning                                      | 默认 / Default (Bedrock) |
-|-----------------|-----------------------------------------------------|--------------------------|
-| `BEDROCK_REACH_BEHIND` | 凋灵位置向水平负方向延伸的方块数 / blocks behind the Wither's pos | `2` |
-| `BEDROCK_REACH_AHEAD`  | 凋灵位置向水平正方向延伸的方块数 / blocks in front of Wither's pos | `1` |
-| `BEDROCK_REACH_UP`     | 凋灵脚底向上延伸的方块数 / blocks above the Wither's base | `5` |
-
-组合起来即为 **4（X）× 6（Y）× 4（Z）** 的立方体范围 / These produce a **4 (X) × 6 (Y) × 4 (Z)** box.
+开发环境启动服务器验证 / Run a dev server to test: `./gradlew runServer`
 
 ---
 
-## 实现原理 / How it works
+## 调整破坏范围大小 / Adjusting the size
 
-原版凋灵在 `WitherBoss.customServerAiStep()` 中，受伤后通过遍历 `BlockPos.betweenClosed(...)` 破坏方块。本模组使用 **Mixin**（`@Redirect`）将该调用替换为基岩版大小的范围。
+1.20.1 的凋灵破坏逻辑是**硬编码的三层循环**（与 1.21.1 的 `BlockPos.betweenClosed` 不同），
+所以本移植用 **Mixin `@ModifyConstant`** 改三个常量。位置：
+> 1.20.1 uses a hard-coded triple loop (unlike 1.21.1's `betweenClosed`), so this port uses **Mixin `@ModifyConstant`** on three constants in:
 >
-> In `WitherBoss.customServerAiStep()`, the vanilla Wither iterates `BlockPos.betweenClosed(...)` to destroy blocks after being hurt. This mod uses a **Mixin** (`@Redirect`) to swap that call for the larger Bedrock-sized box.
+> `src/main/java/com/witherbedrockrange/mixin/WitherBossMixin.java`
+
+| Mixin 方法 / Method | 循环 / Loop | 原值 / Original | 新值 / New |
+|---------------------|-------------|-----------------|------------|
+| `witherbedrockrange$behindX` | X 偏移下界 / X offset lower bound | `-1` | `-2` |
+| `witherbedrockrange$behindZ` | Z 偏移下界 / Z offset lower bound | `-1` | `-2` |
+| `witherbedrockrange$up` | Y 偏移上界 / Y offset upper bound | `3` | `5` |
+
+结果：**X `-2..+1`、Z `-2..+1`、Y `0..+5`** → 4 × 6 × 4。
+
+---
+
+## 与主项目（NeoForge 1.21.1）的差异 / Differences from the 1.21.1 version
+
+- **加载器/构建**：ForgeGradle 而非 ModDevGradle；Java 17 而非 21。/ ForgeGradle (not ModDevGradle); Java 17.
+- **Mixin 方式**：1.20.1 是硬编码循环 → `@ModifyConstant`；1.21.1 用 `betweenClosed` → `@Redirect`。
+- **运行时映射**：Forge 1.20.1 生产 jar 用 SRG，编译用 official → 必须带 `refmap`（official→SRG）。
+  / Forge 1.20.1 ships SRG jars; the refmap remaps official→SRG.
 
 ---
 
 ## 项目结构 / Project structure
 
 ```
-.
-├── .github/workflows/          # CI：构建 + 游戏内运行时测试 / build + in-game runtime test
-├── build.gradle.kts            # 构建配置与模组元数据 / build config & centralized mod metadata
-├── gradle/wrapper/             # Gradle wrapper（可复现构建 / reproducible builds）
-├── gradle.properties
-├── settings.gradle.kts
+.（本分支根目录 / this branch root）
+├── .github/workflows/forge-build.yml  # CI：Forge 1.20.1 构建
+├── build.gradle                       # ForgeGradle 构建配置与模组元数据 / build config & metadata
+├── gradle.properties                  # 版本与 mod 元数据 / versions & mod metadata
+├── settings.gradle
 └── src/main/
     ├── java/com/witherbedrockrange/
     │   ├── WitherBedrockRange.java       # 模组入口 / mod entry point
-    │   └── mixin/WitherBossMixin.java    # 破坏范围 Mixin / the destruction Mixin
+    │   └── mixin/WitherBossMixin.java    # 破坏范围 Mixin（@ModifyConstant）
     └── resources/
+        ├── META-INF/mods.toml
+        ├── pack.mcmeta
         └── witherbedrockrange.mixins.json
 ```
 
@@ -94,17 +102,17 @@ build/libs/
 
 ## 署名与 AI 编写声明 / Attribution & AI-generated disclaimer
 
-**作者 / Authors：** Arcane、DeepSeek-V4
+**作者 / Authors：** Arcane
 
-**重要声明（请务必阅读）/ Important (please read):**
+**重要声明 / Important:**
 
-> 本项目由 **AI（DeepSeek-V4）自动生成**，其后的修改与维护也主要由 AI 完成。项目按 **原样（"AS IS"）** 交付，**不对代码质量、正确性、稳定性、安全性或与任何第三方软件的兼容性做任何保证**。请在使用前自行审查代码、充分测试，并自行承担使用本项目可能产生的全部风险。
+> 本项目由 AI（DeepSeek-V4）自动生成，按 "AS IS" 交付，**不对代码质量、正确性、稳定性、安全性或与任何第三方软件的兼容性做任何保证**，使用者需自行审查、测试并承担风险。
 >
-> This project is entirely **auto-generated by AI (DeepSeek-V4)**, with subsequent changes and maintenance likewise done mainly by AI. It is provided **"AS IS"**, with **no warranty whatsoever regarding code quality, correctness, reliability, security, or compatibility with any third-party software**. Please review the code and test it thoroughly before use, and assume full responsibility for any risks arising from its use.
+> This project is auto-generated by AI (DeepSeek-V4), provided "AS IS", with **no warranty** as to quality, correctness, reliability, security, or compatibility. Review & test before use; use at your own risk.
 
 ---
 
 ## 许可证 / License
 
-本项目基于 [GNU General Public License v3.0](LICENSE.txt) 协议发布。
-This project is licensed under the [GNU General Public License v3.0](LICENSE.txt).
+本分支与仓库一致，基于 [GNU General Public License v3.0](LICENSE.txt)。
+This branch is licensed under the [GNU General Public License v3.0](LICENSE.txt).

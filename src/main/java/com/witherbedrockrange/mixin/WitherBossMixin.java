@@ -1,62 +1,65 @@
 package com.witherbedrockrange.mixin;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
-
-import java.util.Iterator;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 /**
- * Widens the Wither's block-destruction area (the one that triggers every time the
- * Wither takes damage) from Java Edition's 3x~5x3 footprint to Bedrock Edition's 4x6x4.
+ * Forge 1.20.1: widens the Wither's on-damage block-destruction area from Java
+ * Edition's hardcoded 3x4x3 box to Bedrock Edition's 4x6x4.
  *
- * <p>In {@code WitherBoss.customServerAiStep()} the vanilla code, after being hurt,
- * iterates over a box centered around the Wither and destroys destroyable blocks:
+ * <p>In 1.20.1, {@code WitherBoss.customServerAiStep()} destroys blocks using three
+ * hard-coded nested loops (it does not use {@code BlockPos.betweenClosed} the way
+ * newer versions do). Maintaining a {@code destroyBlocksTick} countdown, it clears:
  * <pre>
- * int i = Mth.floor(this.getBbWidth() / 2.0F + 1.0F); // -> 1  (X/Z: -1 .. +1, width 3)
- * int j = Mth.floor(this.getBbHeight());              // -> 4  (Y: base .. +4, height 5)
- * for (BlockPos p : BlockPos.betweenClosed(
- *          bx - i, by, bz - i, bx + i, by + j, bz + i)) { ... }
+ * int y = Mth.floor(this.getY());
+ * int x = Mth.floor(this.getX());
+ * int z = Mth.floor(this.getZ());
+ * for (int i = -1; i &lt;= 1; ++i)          // x offset: -1 .. +1  (3 wide)
+ *   for (int j = -1; j &lt;= 1; ++j)        // z offset: -1 .. +1  (3 deep)
+ *     for (int k = 0; k &lt;= 3; ++k)       // y offset:  0 .. +3  (4 tall)
+ *       ... destroy new BlockPos(x+i, y+k, z+j) if destroyable ...
  * </pre>
  *
- * <p>We {@link Redirect} that single {@link BlockPos#betweenClosed} call so the box
- * becomes 4 wide (X) x 6 tall (Y) x 4 deep (Z), anchored the same way as vanilla
- * (horizontal extent measured from the Wither's block position, extending upward),
- * matching the far more destructive Bedrock Edition behaviour.
+ * <p>We {@link ModifyConstant} the three relevant integer constants so the box becomes
+ * 4 wide (X) x 6 tall (Y) x 4 deep (Z):
+ * <ul>
+ *   <li>the two {@code -1} lower bounds (the only two in this method) become {@code -2},
+ *       turning X/Z into {@code -2 .. +1};</li>
+ *   <li>the {@code 3} upper bound of the vertical loop (the only one in this method)
+ *       becomes {@code 5}, turning Y into {@code 0 .. +5}.</li>
+ * </ul>
+ * The file is written against <em>official</em> (Mojang) names; the refmap
+ * {@code witherbedrockrange.refmap.json} remaps them to SRG for the production jar.
  */
 @Mixin(WitherBoss.class)
 public abstract class WitherBossMixin {
 
-    /** Bedrock Edition: horizontal reach behind / below the Wither's origin. */
+    /** Bedrock Edition: wide the horizontal reach to -2 .. +1 (4 blocks). */
     @Unique
-    private static final int BEDROCK_REACH_BEHIND = 2;
-    /** Bedrock Edition: horizontal reach in front of / in the positive direction. */
+    private static final int BEDROCK_REACH = -2;
+    /** Bedrock Edition: six blocks of vertical reach above the base (0 .. +5). */
     @Unique
-    private static final int BEDROCK_REACH_AHEAD = 1;
-    /** Bedrock Edition: how high above the Wither's base the box extends. */
-    @Unique
-    private static final int BEDROCK_REACH_UP = 5;
+    private static final int BEDROCK_HEIGHT = 5;
 
-    @Redirect(
-        method = "customServerAiStep",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/core/BlockPos;betweenClosed(IIIIII)Ljava/lang/Iterable;"
-        )
-    )
-    private Iterable<BlockPos> witherbedrockrange$expandDestructionArea(
-            int originalX1, int originalY1, int originalZ1, int originalX2, int originalY2, int originalZ2) {
-        WitherBoss wither = (WitherBoss) (Object) this;
-        int bx = wither.getBlockX();
-        int by = wither.getBlockY();
-        int bz = wither.getBlockZ();
-        // X: bx-2 .. bx+1 (4 blocks), Y: by .. by+5 (6 blocks), Z: bz-2 .. bz+1 (4 blocks).
-        return BlockPos.betweenClosed(
-            bx - BEDROCK_REACH_BEHIND, by, bz - BEDROCK_REACH_BEHIND,
-            bx + BEDROCK_REACH_AHEAD, by + BEDROCK_REACH_UP, bz + BEDROCK_REACH_AHEAD
-        );
+    /** X-offset loop lower bound: -1 -> -2. */
+    @ModifyConstant(method = "customServerAiStep", constant = @Constant(intValue = -1, ordinal = 0))
+    private int witherbedrockrange$behindX(int value) {
+        return BEDROCK_REACH;
+    }
+
+    /** Z-offset loop lower bound: -1 -> -2. */
+    @ModifyConstant(method = "customServerAiStep", constant = @Constant(intValue = -1, ordinal = 1))
+    private int witherbedrockrange$behindZ(int value) {
+        return BEDROCK_REACH;
+    }
+
+    /** Y-offset loop upper bound: 3 -> 5. (ordinal 1: the first int 3 in customServerAiStep
+     *  is the head-array loop bound `i < 3`; the SECOND int 3 is the destroy-loop upper bound.) */
+    @ModifyConstant(method = "customServerAiStep", constant = @Constant(intValue = 3, ordinal = 1))
+    private int witherbedrockrange$up(int value) {
+        return BEDROCK_HEIGHT;
     }
 }

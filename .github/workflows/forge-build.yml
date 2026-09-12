@@ -32,13 +32,12 @@ jobs:
         uses: gradle/actions/setup-gradle@v6.2.0
 
       - name: Build with Gradle
-        working-directory: forge-1.20.1
         run: chmod u+x ./gradlew && ./gradlew build --no-daemon
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7.0.1
         with:
           name: 'witherbedrockrange-forge-1.20.1'
-          path: forge-1.20.1/build/libs/*.jar
+          path: build/libs/*.jar
           retention-days: 7
           compression-level: 9
