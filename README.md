@@ -94,7 +94,7 @@ build/libs/
 
 ## 署名与 AI 编写声明 / Attribution & AI-generated disclaimer
 
-**作者 / Authors：** Arcane、DeepSeek-V4
+**作者 / Authors：** Arcane
 
 **重要声明（请务必阅读）/ Important (please read):**
 

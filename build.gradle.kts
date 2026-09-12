@@ -19,7 +19,7 @@ object ModConfig {
     const val MOD_VERSION = "1.0.0"
     const val MOD_GROUP_ID = "com.witherbedrockrange"
     const val MOD_DISPLAY_URL = ""
-    const val MOD_AUTHORS = "Arcane, DeepSeek-V4"
+    const val MOD_AUTHORS = "Arcane"
     const val MOD_DESCRIPTION = "Makes the Wither's block-destruction range (triggered when it takes damage) match Bedrock Edition: a 4x6x4 area around itself instead of Java's 3x4x3."
 
     const val CURSEFORGE_PROJECT_ID = ""
