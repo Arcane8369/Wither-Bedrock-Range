@@ -2,13 +2,14 @@
 
 > **English / 中文**
 
-本项目是在 **Forge 1.20.1** 上的移植版（主项目 NeoForge 1.21.1 版见仓库根目录）。
-This is the **Forge 1.20.1** port (the root NeoForge 1.21.1 version lives in the repo root).
+**本分支说明 / This branch:** 当前内容存放于 **`port/1.20.1-forge` 分支**（未合并进仓库默认分支 `main`），
+专门用于 **Forge 1.20 / 1.20.1** 的移植。默认分支 `main` 仍是 NeoForge 1.21.1 版。
+> This is the **Forge 1.20 / 1.20.1** port, kept on the separate **`port/1.20.1-forge` branch**. The default `main` branch contains the NeoForge 1.21.1 version.
 
-与主项目相同：让凋灵（Wither）在**受伤时**对周围方块的破坏范围对齐**基岩版（Bedrock Edition）**。
+让凋灵（Wither）在**受伤时**对周围方块的破坏范围对齐**基岩版（Bedrock Edition）**。
 Same behaviour as the main project: when the Wither takes damage, it destroys a **Bedrock Edition**-sized block area.
 
-- **原版 / Vanilla 1.20.1:** 硬编码的三层循环，破坏约 **3 × 4 × 3** 的方块区域 / a hard-coded ~3×4×3 area
+- **原版 / Vanilla 1.20 / 1.20.1 (Forge):** 硬编码的三层循环，破坏约 **3 × 4 × 3** 的方块区域 / a hard-coded ~3×4×3 area
 - **本移植 / This port:** 破坏 **4 × 6 × 4**（X × Y × Z）/ a 4×6×4 area
 
 ---
@@ -17,12 +18,13 @@ Same behaviour as the main project: when the Wither takes damage, it destroys a 
 
 | 中文 | English |
 |------|---------|
-| Minecraft Java 版 **1.20.1** | Minecraft Java Edition **1.20.1** |
-| **Forge** `47.x` | **Forge** `47.x` |
+| Minecraft Java 版 **1.20 / 1.20.1** | Minecraft Java Edition **1.20 / 1.20.1** |
+| **Forge** `47.x`（Forge，非 NeoForge） | **Forge** `47.x` (Forge, not NeoForge) |
 | 从源码构建需要 **Java 17** | Java **17** to build |
 
-> 注意：不是 NeoForge。若要问 Neoforge 1.21.1，请用仓库根目录的版本。
-> Note: this is Forge, not NeoForge. For NeoForge 1.21.1, use the root project.
+> 注意：这是 **Forge** 版本且只适配 **1.20 / 1.20.1**，仅在本 `port/1.20.1-forge` 分支上。
+> 需要 **NeoForge 1.21.1** 版请用仓库默认分支 `main`。
+> Note: this is the **Forge** build for **1.20 / 1.20.1**, only on the `port/1.20.1-forge` branch. For the **NeoForge 1.21.1** build, use the default `main` branch.
 
 ---
 
