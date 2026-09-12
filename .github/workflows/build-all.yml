@@ -1,0 +1,72 @@
+name: Build All
+
+# Builds BOTH NeoForge 1.21.1 (main) and Forge 1.20.1 (port/1.20.1-forge),
+# regardless of which branch the workflow is dispatched from.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-1211:
+    name: Build NeoForge 1.21.1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v7.0.0
+        with:
+          ref: 'main'
+          path: nj-1211
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v5.4.0
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6.2.0
+
+      - name: Build with Gradle
+        working-directory: nj-1211
+        run: chmod u+x ./gradlew && ./gradlew build --no-daemon
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: 'witherbedrockrange-1.21.1-neoforge'
+          path: nj-1211/build/libs/*.jar
+          retention-days: 7
+          compression-level: 9
+
+  build-1201:
+    name: Build Forge 1.20.1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Forge 1.20.1 port branch
+        uses: actions/checkout@v7.0.0
+        with:
+          ref: 'port/1.20.1-forge'
+          path: fg-1201
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v5.4.0
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6.2.0
+
+      - name: Build with Gradle
+        working-directory: fg-1201
+        run: chmod u+x ./gradlew && ./gradlew build --no-daemon
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: 'witherbedrockrange-1.20.1-forge'
+          path: fg-1201/build/libs/*.jar
+          retention-days: 7
+          compression-level: 9
